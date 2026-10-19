@@ -2,20 +2,21 @@
 import  os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+load_dotenv(os.path.join(BASE_DIR,'.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
-
+SECRET_KEY = os.environ.get('SECRET_kEY','django-insecure-r5zukpaopdihl9(hgs12*0w&l3)0p!rx22+3#9@=wk1r*kcv+1')
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r5zukpaopdihl9(hgs12*0w&l3)0p!rx22+3#9@=wk1r*kcv+1'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG','True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h for h in os.environ.get('ALLOWED_HOSTS','').split(',')if h]
 
 
 # Application definition
@@ -123,7 +124,12 @@ MAILERS = {
 }
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-CORS_ALLOW_ALL_ORIGINS = True  # Permite requisições de qualquer origem local no ambiente de testes
+cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS','')
+if cors_origins:
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(',')if origin.strip()]
+else:
+    CORS_ALLOW_ALL_ORIGINS = DEBUG   
+
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 REST_FRAMEWORK = {
